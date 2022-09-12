@@ -40,12 +40,32 @@ RSpec.describe 'As a user,' do
       expect(page).to_not have_content(@ferris.name)
     end
 
-    it "And the rides are listed by thrill rating in descending order" do
+    xit "And the rides are listed by thrill rating in descending order" do
       visit "/mechanics/#{@jimmy.id}"
       # save_and_open_page
       # dealing with a shoulda matcher error here.
 
       expect("Hurler").to appear_before("Scrambler")
+    end
+
+    it "I see a form to add a ride to their workload" do
+      visit "/mechanics/#{@jimmy.id}"
+
+      expect(page).to have_content("Add Ride")
+      expect(find('form')).to have_content('ID')
+      expect(page).to have_button("submit")
+    end
+
+    context "When I fill in that field with an id of an existing ride and hit submit" do
+      it "I’m taken back to that mechanic's show page, And I see the name of that newly added ride on this mechanics show page" do
+        visit "/mechanics/#{@jimmy.id}"
+
+        fill_in "ID", with: @jaws.id
+        click_button "submit"
+
+        expect(current_path).to eq("/mechanics/#{@jimmy.id}")
+        expect(page).to have_content(@jaws.name)
+      end
     end
   end
 end
