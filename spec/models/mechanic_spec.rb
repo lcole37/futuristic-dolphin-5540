@@ -24,5 +24,25 @@ RSpec.describe Mechanic, type: :model do
         expect(@mechanics.average_experience).to eq(5)
       end
     end
+
+    describe 'open rides' do
+      before :each do
+        @six_flags = AmusementPark.create!(name: 'Six Flags', admission_cost: 75)
+
+        @hurler = @six_flags.rides.create!(name: 'The Hurler', thrill_rating: 3, open: true)
+        @scrambler = @six_flags.rides.create!(name: 'The Scrambler', thrill_rating: 4, open: true)
+        @ferris = @six_flags.rides.create!(name: 'Ferris Wheel', thrill_rating: 7, open: false)
+
+        @jimmy = Mechanic.create!(name: "Jimmy", years_experience: 2)
+
+        RideMechanic.create!(ride: @hurler, mechanic: @jimmy)
+        RideMechanic.create!(ride: @scrambler, mechanic: @jimmy)
+        RideMechanic.create!(ride: @ferris, mechanic: @jimmy)
+      end
+
+      it 'returns array of open rides in order of thrill' do
+        expect(@jimmy.open_rides).to eq([@scrambler, @hurler])
+      end
+    end
   end
 end
